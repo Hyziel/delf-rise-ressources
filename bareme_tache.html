@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réalisation de la tâche</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:transparent;padding:12px}
+.crit{background:#ebf6ff;border-radius:10px;padding:16px;max-width:520px;margin:0 auto}
+.crit-desc{color:#0c0e1d;font-size:13px;line-height:1.6;margin-bottom:14px}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lvl{border-radius:8px;padding:10px 8px;text-align:center;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .1s;user-select:none}
+.lvl:hover{transform:translateY(-2px)}
+.lvl.active{border-color:#376c5f}
+.lvl-score{font-size:22px;font-weight:700;margin-bottom:4px}
+.lvl-label{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.lvl-desc{font-size:10px;line-height:1.45}
+.lvl-0{background:#fff}.lvl-0 .lvl-score{color:#c8d0d8}.lvl-0 .lvl-label{color:#a0aab4}.lvl-0 .lvl-desc{color:#a0aab4}
+.lvl-1{background:#fff}.lvl-1 .lvl-score{color:#e0a840}.lvl-1 .lvl-label{color:#b07a10}.lvl-1 .lvl-desc{color:#b07a10}
+.lvl-2{background:#e1f5ee}.lvl-2 .lvl-score{color:#478978}.lvl-2 .lvl-label{color:#376c5f}.lvl-2 .lvl-desc{color:#376c5f}
+.lvl-3{background:#c8ece2}.lvl-3 .lvl-score{color:#376c5f}.lvl-3 .lvl-label{color:#376c5f}.lvl-3 .lvl-desc{color:#376c5f}
+</style>
+</head>
+<body>
+<div class="crit">
+  <div class="crit-desc">Tu as répondu à tous les éléments demandés dans la consigne. Ton texte a le bon format (lettre, article…) et la bonne longueur.</div>
+  <div class="levels">
+    <div class="lvl lvl-0"><div class="lvl-score">0</div><div class="lvl-label">Non répondu</div><div class="lvl-desc">Hors-sujet ou copie blanche</div></div>
+    <div class="lvl lvl-1"><div class="lvl-score">1</div><div class="lvl-label">En dessous</div><div class="lvl-desc">Réponse partielle ou format inadapté</div></div>
+    <div class="lvl lvl-2"><div class="lvl-score">3</div><div class="lvl-label">Niveau B1</div><div class="lvl-desc">Consigne respectée, format correct</div></div>
+    <div class="lvl lvl-3"><div class="lvl-score">5</div><div class="lvl-label">Niveau B1+</div><div class="lvl-desc">Tous les points traités avec précision</div></div>
+
+  </div>
+</div>
+</body>
+</html>
