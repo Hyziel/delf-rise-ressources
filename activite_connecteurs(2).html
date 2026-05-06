@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activité — Connecteurs logiques</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--c1:#0c0e1d;--c2:#ebf6ff;--c3:#5dac98;--c4:#478978;--c5:#376c5f}
+
+body{font-family:'Inter',system-ui,sans-serif;background:#eef7f4;padding:0;}
+
+/* ══ BARRE SOFIA ══ */
+.sofia-bar{
+  background:#ffffff;
+  border:1px solid rgba(93,172,152,.3);
+  box-shadow:0 1px 4px rgba(55,108,95,.08);
+  padding:9px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-radius:10px;
+  max-width:640px;
+  margin:16px auto 0;
+}
+.sofia-bar-name{color:var(--c5);font-size:0.68em;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;flex-shrink:0;}
+.sofia-bar-conf{display:flex;align-items:center;gap:7px;flex:1;}
+.sofia-bar-conf-label{color:var(--c4);font-size:0.68em;font-weight:700;white-space:nowrap;}
+.sofia-bar-track{flex:1;height:6px;background:rgba(93,172,152,.15);border-radius:99px;overflow:hidden;min-width:60px;}
+.sofia-bar-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#5dac98,#a8ddd0);transition:width 1.1s cubic-bezier(0.4,0,0.2,1);}
+.sofia-bar-pct{color:var(--c5);font-size:0.75em;font-weight:800;min-width:30px;text-align:right;}
+.sofia-bar-emoji-end{font-size:0.9em;transition:opacity 0.8s;opacity:0.3;}
+.sofia-step-label{color:var(--c4);font-size:0.67em;font-weight:700;white-space:nowrap;border-left:1px solid rgba(93,172,152,.25);padding-left:10px;}
+
+/* ══ FEEDBACK STRIP SOFIA ══ */
+.sofia-feedback-strip{display:none;align-items:center;gap:10px;padding:8px 16px;font-family:'Inter',system-ui,sans-serif;}
+.sofia-feedback-strip.sofia-visible{display:flex;animation:sofiaSlide 0.3s ease;}
+.sofia-feedback-success{background:#d4ede7;border:1px solid rgba(93,172,152,.4);}
+.sofia-feedback-fail{background:#fdf0f0;border:1px solid rgba(220,80,80,.2);}
+.sofia-feedback-strip p{color:#1a2a25;font-size:0.84em;font-style:italic;line-height:1.4;}
+@keyframes sofiaSlide{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══ CONTENU ══ */
+.wrap{padding:20px 20px 24px;max-width:640px;margin:0 auto;}
+
+.badge-step{display:inline-flex;align-items:center;background:rgba(93,172,152,.15);border:1px solid rgba(93,172,152,.3);border-radius:20px;padding:4px 12px;margin-bottom:14px;}
+.badge-step span{color:var(--c4);font-size:11px;font-weight:700;letter-spacing:.06em;}
+.instr{color:#2a3a35;font-size:13.5px;line-height:1.6;margin-bottom:14px;}
+
+.tries-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.tries-label{color:#888;font-size:11px;}
+.try-dot{width:10px;height:10px;border-radius:50%;background:#cce6de;border:1px solid #b0d8cc;transition:background .2s;}
+.try-dot.used{background:rgba(93,172,152,.5);border-color:var(--c3);}
+.try-dot.fail{background:rgba(220,100,100,.4);border-color:#dc6464;}
+
+.letter-card{background:#ffffff;border:1px solid rgba(93,172,152,.2);border-radius:10px;padding:18px 20px;margin-bottom:16px;}
+.letter-body{color:#1a2a25;font-size:13.5px;line-height:2.6;}
+
+.gap-block{display:inline-block;vertical-align:middle;margin:0 2px;}
+.gap{
+  display:inline-block;min-width:130px;height:30px;
+  border:none;border-bottom:2px solid rgba(93,172,152,.4);
+  background:transparent;
+  color:var(--c5);
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  padding:0 4px;cursor:pointer;outline:none;
+  transition:border-color .15s;vertical-align:middle;
+}
+.gap:focus{border-bottom-color:var(--c3);}
+.gap option{background:#ffffff;color:#1a2a25;}
+.gap.ok{border-bottom-color:var(--c3);color:var(--c5);font-weight:600;}
+.gap.ko{border-bottom-color:#dc6464;color:#c0504d;}
+.gap:disabled{cursor:default;}
+
+.hint{font-size:11px;color:#888;font-style:italic;display:none;margin-top:2px;line-height:1.4;max-width:240px;}
+
+.feedback{margin-bottom:14px;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;display:none;color:#1a2a25;}
+.feedback.show{display:block;}
+.feedback.ok-fb{background:#edf7f4;border:1px solid rgba(93,172,152,.35);}
+.feedback.warn{background:#fdf6e8;border:1px solid rgba(220,160,60,.35);}
+.feedback.error{background:#fdf0f0;border:1px solid rgba(220,80,80,.2);}
+.feedback strong{color:var(--c5);}
+.feedback.warn strong{color:#b8860b;}
+.feedback.error strong{color:#c0504d;}
+
+.correction-list{margin:8px 0 0 4px;display:flex;flex-direction:column;gap:4px;}
+.correction-item{font-size:12px;display:flex;gap:6px;align-items:baseline;}
+.correction-item .lbl{color:#999;min-width:60px;}
+.correction-item .val{color:var(--c5);font-weight:500;}
+
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.helper{color:#aaa;font-size:12px;}
+.btn-row{display:flex;gap:8px;}
+.btn{background:var(--c4);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn:disabled{background:#c8ddd9;color:#fff;cursor:default;}
+.btn:not(:disabled):hover{background:var(--c5);}
+.btn-retry{background:#dff0ea;color:var(--c5);border:1px solid rgba(93,172,152,.3);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;display:none;}
+.btn-retry:hover{background:#cde8e0;}
+</style>
+</head>
+<body>
+
+<!-- ══ BARRE SOFIA ══ -->
+<div class="sofia-bar">
+  <span class="sofia-bar-name">Sofia</span>
+  <div class="sofia-bar-conf">
+    <span class="sofia-bar-conf-label">Confiance</span>
+    <span style="font-size:0.9em;">😰</span>
+    <div class="sofia-bar-track">
+      <div class="sofia-bar-fill" id="sofiaBarFill"></div>
+    </div>
+    <span class="sofia-bar-emoji-end" id="sofiaEmojiEnd">😊</span>
+    <span class="sofia-bar-pct" id="sofiaBarPct">0%</span>
+  </div>
+  <span class="sofia-step-label" id="sofiaStepLabel">Étape 4/5</span>
+</div>
+
+<div class="sofia-feedback-strip" id="sofiaFeedbackStrip" style="max-width:640px;margin:6px auto 0;border-radius:8px;">
+  <span style="font-size:1.2em;" id="sofiaFeedbackEmoji">💬</span>
+  <p id="sofiaFeedbackText"></p>
+</div>
+
+<!-- ══ CONTENU ══ -->
+<div class="wrap">
+  <div class="badge-step"><span>COMPLÈTE AVEC LE BON CONNECTEUR</span></div>
+  <div class="instr">Choisis le connecteur logique qui convient dans chaque liste déroulante pour compléter la lettre de Sofia.</div>
+  <div class="tries-row">
+    <span class="tries-label">Essais</span>
+    <span class="try-dot" id="dot0"></span>
+    <span class="try-dot" id="dot1"></span>
+    <span class="try-dot" id="dot2"></span>
+  </div>
+  <div class="letter-card">
+    <div class="letter-body" id="letter"></div>
+  </div>
+  <div class="feedback" id="fb"></div>
+  <div class="bottom">
+    <span class="helper" id="helper">Sélectionne un connecteur dans chaque liste</span>
+    <div class="btn-row">
+      <button class="btn-retry" id="btn-retry">Recommencer</button>
+      <button class="btn" id="btn" disabled>Vérifier</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ SOFIA TRACKER (embarqué) ══ */
+var SofiaTracker=(function(){
+  var KEY='sofia_342_progress',TOTAL=5;
+  var FB={
+    success:["Ouf ! Avec ça je sais exactement quoi écrire 😮‍💨","Super, j'ai plein d'idées maintenant !","Mon plan est solide, je me sens mieux !","Mon texte est bien lié, ça se lit vraiment bien ! ✨","Je suis prête à rendre ma copie. Merci ! 🎉"],
+    fail:["Hmm, je ne suis pas sûre… tu peux m'aider ?","Attention, Victor est mon ami au comité !","L'ordre de mes idées ne sera pas logique…","Ce connecteur ne va pas bien là, mon texte sonne bizarre…","Oops, j'ai failli oublier de vérifier ça !"]
+  };
+  function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):{steps:{}};}catch(e){return{steps:{}};}}
+  function save(s){try{s.lastUpdate=Date.now();localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  function calcPct(s){var t=0;for(var i=1;i<=TOTAL;i++){if(s.steps[i]==='success')t+=100;else if(s.steps[i]==='fail')t+=40;}return Math.min(100,Math.round(t/TOTAL));}
+  function render(pct,step){
+    var f=document.getElementById('sofiaBarFill'),l=document.getElementById('sofiaBarPct'),e=document.getElementById('sofiaEmojiEnd'),s=document.getElementById('sofiaStepLabel');
+    if(f)f.style.width=pct+'%';if(l)l.textContent=pct+'%';if(e)e.style.opacity=pct>=80?'1':'0.3';if(s&&step)s.textContent='Étape '+step+'/'+TOTAL;
+  }
+  function feedback(step,type,msg){
+    var strip=document.getElementById('sofiaFeedbackStrip'),txt=document.getElementById('sofiaFeedbackText'),em=document.getElementById('sofiaFeedbackEmoji');
+    if(!strip||!txt)return;
+    txt.textContent=msg||(FB[type][step-1]||FB[type][0]);
+    em.textContent=type==='success'?'😊':'😕';
+    strip.className='sofia-feedback-strip sofia-feedback-'+type+' sofia-visible';
+    clearTimeout(strip._t);strip._t=setTimeout(function(){strip.classList.remove('sofia-visible');},4500);
+  }
+  function init(step){var state=load();render(calcPct(state),step);}
+  function success(step,msg){var state=load();if(state.steps[step]!=='success'){state.steps[step]='success';save(state);}render(calcPct(state),step);feedback(step,'success',msg);}
+  function fail(step,msg){var state=load();if(state.steps[step]!=='success'){state.steps[step]='fail';save(state);}render(calcPct(state),step);feedback(step,'fail',msg);}
+  return{init:init,success:success,fail:fail};
+})();
+
+/* ══ ACTIVITÉ ══ */
+var SOFIA_STEP = 4;
+
+var OPTIONS = ["à ce propos","d'abord","ensuite","c'est pourquoi","et puis","également"];
+
+var HINTS = {
+  0:"Ce connecteur relie ce qui suit à ce qui vient d'être dit.",
+  1:"Ce connecteur introduit la première idée d'une liste.",
+  2:"Ce connecteur introduit une deuxième idée dans une énumération.",
+  3:"Ce connecteur exprime une conséquence de ce qui précède.",
+  4:"Ce connecteur ajoute une idée supplémentaire en fin d'énumération.",
+  5:"Ce connecteur marque un ajout à l'intérieur d'une même phrase."
+};
+
+var SEGMENTS=[
+  {type:"text",content:"Salut Victor,\nJe te remercie de m'avoir envoyé ta nouvelle proposition. C'est une super idée ! Je suis d'accord avec toi : la cantine a besoin d'une nouvelle image.\n"},
+  {type:"gap",id:0,answer:"à ce propos"},
+  {type:"text",content:", je t'annonce que nous avons reçu les résultats de l'enquête faite auprès des élèves sur ce qu'ils veulent modifier. La cantine est la première chose qu'ils veulent changer dans notre école.\n"},
+  {type:"gap",id:1,answer:"d'abord"},
+  {type:"text",content:", je suis d'accord avec toi pour nettoyer la salle et mettre des cadres. On pourrait aussi demander à des élèves du cours d'art de peindre sur les murs. Ce serait magnifique !\n"},
+  {type:"gap",id:2,answer:"ensuite"},
+  {type:"text",content:", nous devons être prudents avec la musique et les machines à jeux. Il ne faut pas faire croire au directeur de l'école que nous voulons transformer la cantine en aire de jeux. L'espace doit rester calme. "},
+  {type:"gap",id:3,answer:"c'est pourquoi"},
+  {type:"text",content:" je préfère insister sur la décoration dans un premier temps.\n"},
+  {type:"gap",id:4,answer:"et puis"},
+  {type:"text",content:", nous devrons "},
+  {type:"gap",id:5,answer:"également"},
+  {type:"text",content:" réviser les menus. Nous pourrons en parler pendant notre réunion avec le directeur.\nOn en parle à l'école.\nÀ demain,\nSofia"}
+];
+
+var MAX_TRIES=3,tries=0,validated=false,scorm=null,gapEls={},hintEls={};
+
+function norm(s){return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
+function shuffleArr(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+function initSCORM(){try{var api=window.parent.API_1484_11||window.parent.API;if(api){scorm=api;scorm.Initialize("");scorm.SetValue("cmi.completion_status","incomplete");scorm.SetValue("cmi.success_status","unknown");}}catch(e){}}
+
+function sendSCORM(correct,total,attempt){
+  try{
+    var score=Math.round((correct/total)*100),passed=correct===total,exhausted=attempt>=MAX_TRIES;
+    if(scorm){scorm.SetValue("cmi.score.raw",String(score));scorm.SetValue("cmi.score.min","0");scorm.SetValue("cmi.score.max","100");scorm.SetValue("cmi.score.scaled",(correct/total).toFixed(2));if(passed||exhausted){scorm.SetValue("cmi.completion_status","completed");scorm.SetValue("cmi.success_status",passed?"passed":"failed");scorm.Commit("");}}
+    if(passed||exhausted)window.parent.postMessage({type:'complete'},'*');
+  }catch(e){window.parent.postMessage({type:'complete'},'*');}
+}
+
+function updateDots(){for(var d=0;d<MAX_TRIES;d++){var dot=document.getElementById('dot'+d);if(d<tries-1)dot.className='try-dot fail';else if(d===tries-1)dot.className='try-dot used';else dot.className='try-dot';}}
+
+function build(){
+  var letterEl=document.getElementById('letter');letterEl.innerHTML='';gapEls={};hintEls={};
+  SEGMENTS.forEach(function(seg){
+    if(seg.type==='text'){
+      seg.content.split('\n').forEach(function(line,i,arr){
+        letterEl.appendChild(document.createTextNode(line));
+        if(i<arr.length-1)letterEl.appendChild(document.createElement('br'));
+      });
+    } else {
+      var block=document.createElement('span');block.className='gap-block';
+      var sel=document.createElement('select');sel.className='gap';sel.setAttribute('data-id',seg.id);
+      var ph=document.createElement('option');ph.value='';ph.textContent='— choisir —';ph.disabled=true;ph.selected=true;sel.appendChild(ph);
+      shuffleArr(OPTIONS).forEach(function(opt){var o=document.createElement('option');o.value=opt;o.textContent=opt;sel.appendChild(o);});
+      sel.addEventListener('change',checkCanValidate);
+      var hint=document.createElement('span');hint.className='hint';hint.textContent=HINTS[seg.id];
+      block.appendChild(sel);block.appendChild(hint);letterEl.appendChild(block);
+      gapEls[seg.id]=sel;hintEls[seg.id]=hint;
+    }
+  });
+  checkCanValidate();
+}
+
+function checkCanValidate(){
+  var filled=0,allFilled=true;
+  for(var id in gapEls){if(gapEls[id].value)filled++;else allFilled=false;}
+  document.getElementById('btn').disabled=!allFilled;
+  document.getElementById('helper').textContent=filled===0?'Sélectionne un connecteur dans chaque liste':filled+'/6 trou'+(filled>1?'s':'')+' complété'+(filled>1?'s':'');
+}
+
+function validate(){
+  if(validated)return;validated=true;tries++;updateDots();
+  var correct=0,total=Object.keys(gapEls).length;
+  SEGMENTS.forEach(function(seg){
+    if(seg.type!=='gap')return;
+    var sel=gapEls[seg.id],isOk=norm(sel.value)===norm(seg.answer);
+    if(isOk){correct++;sel.className='gap ok';}else{sel.className='gap ko';}
+    sel.disabled=true;
+  });
+  var fb=document.getElementById('fb'),btnRetry=document.getElementById('btn-retry'),btnVal=document.getElementById('btn');
+  btnVal.disabled=true;
+
+  if(correct===total){
+    fb.className='feedback show ok-fb';
+    fb.innerHTML='<strong>Excellent !</strong> Tous les connecteurs sont bien placés. Sofia maîtrise parfaitement l\'articulation de son message.';
+    btnVal.textContent='Terminé ✓';
+    SofiaTracker.success(SOFIA_STEP);
+    sendSCORM(correct,total,tries);
+  } else if(tries<MAX_TRIES){
+    SEGMENTS.forEach(function(seg){if(seg.type!=='gap')return;if(norm(gapEls[seg.id].value)!==norm(seg.answer))hintEls[seg.id].style.display='block';});
+    fb.className='feedback show warn';
+    fb.innerHTML='<strong>'+correct+'/'+total+' connecteurs corrects.</strong> Des indices apparaissent sous les listes en rouge pour t\'aider.';
+    btnVal.textContent='Vérifier';btnRetry.style.display='inline-block';
+  } else {
+    var corrHtml='<div class="correction-list">';
+    SEGMENTS.forEach(function(seg){if(seg.type!=='gap')return;corrHtml+='<div class="correction-item"><span class="lbl">Trou '+(seg.id+1)+' :</span><span class="val">'+seg.answer+'</span></div>';});
+    corrHtml+='</div>';
+    fb.className='feedback show error';
+    fb.innerHTML='<strong>3 essais utilisés.</strong> Voici les réponses correctes :'+corrHtml;
+    btnVal.textContent='Terminé';btnRetry.style.display='none';
+    SofiaTracker.fail(SOFIA_STEP);
+    sendSCORM(correct,total,tries);
+  }
+}
+
+function reset(){
+  validated=false;
+  document.getElementById('fb').className='feedback';document.getElementById('fb').innerHTML='';
+  document.getElementById('btn').textContent='Vérifier';document.getElementById('btn').disabled=true;
+  document.getElementById('btn-retry').style.display='none';
+  build();updateDots();
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  SofiaTracker.init(SOFIA_STEP);
+  initSCORM();build();
+  document.getElementById('btn').addEventListener('click',validate);
+  document.getElementById('btn-retry').addEventListener('click',reset);
+});
+</script>
+</body>
+</html>
