@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activité — Sélection des mots-clés</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c1:#0c0e1d;
+  --c2:#ebf6ff;
+  --c3:#5dac98;
+  --c4:#478978;
+  --c5:#376c5f;
+}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:#ffffff;
+  padding:0;
+}
+
+/* ══ BARRE SOFIA ══ */
+.sofia-bar{
+  background:#eff7f5;
+  border:1px solid rgba(93,172,152,.35);
+  padding:9px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-radius:10px;
+  max-width:640px;
+  margin:16px auto 0;
+}
+.sofia-bar-name{
+  color:var(--c5);
+  font-size:0.68em;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.09em;
+  flex-shrink:0;
+}
+.sofia-bar-conf{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex:1;
+}
+.sofia-bar-conf-label{
+  color:var(--c4);
+  font-size:0.68em;
+  font-weight:700;
+  white-space:nowrap;
+}
+.sofia-bar-track{
+  flex:1;
+  height:6px;
+  background:rgba(93,172,152,.2);
+  border-radius:99px;
+  overflow:hidden;
+  min-width:60px;
+}
+.sofia-bar-fill{
+  height:100%;
+  width:0%;
+  border-radius:99px;
+  background:linear-gradient(90deg,#5dac98,#a8ddd0);
+  transition:width 1.1s cubic-bezier(0.4,0,0.2,1);
+}
+.sofia-bar-pct{
+  color:var(--c5);
+  font-size:0.75em;
+  font-weight:800;
+  min-width:30px;
+  text-align:right;
+}
+.sofia-bar-emoji-end{
+  font-size:0.9em;
+  transition:opacity 0.8s;
+  opacity:0.3;
+}
+.sofia-step-label{
+  color:var(--c4);
+  font-size:0.67em;
+  font-weight:700;
+  white-space:nowrap;
+  border-left:1px solid rgba(93,172,152,.3);
+  padding-left:10px;
+}
+
+/* ══ FEEDBACK STRIP SOFIA ══ */
+.sofia-feedback-strip{
+  display:none;
+  align-items:center;
+  gap:10px;
+  padding:8px 16px;
+  font-family:'Inter',system-ui,sans-serif;
+}
+.sofia-feedback-strip.sofia-visible{display:flex;animation:sofiaSlide 0.3s ease;}
+.sofia-feedback-success{background:#d4ede7;border:1px solid rgba(93,172,152,.4);}
+.sofia-feedback-fail{background:#fdf0f0;border:1px solid rgba(220,80,80,.2);}
+.sofia-feedback-strip p{
+  color:#1a2a25;
+  font-size:0.84em;
+  font-style:italic;
+  line-height:1.4;
+}
+@keyframes sofiaSlide{
+  from{opacity:0;transform:translateY(-5px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ══ CONTENU PRINCIPAL ══ */
+.wrap{
+  padding:20px 20px 24px;
+  max-width:640px;
+  margin:0 auto;
+}
+
+.badge-step{
+  display:inline-flex;
+  align-items:center;
+  background:rgba(93,172,152,.12);
+  border:1px solid rgba(93,172,152,.28);
+  border-radius:20px;
+  padding:4px 12px;
+  margin-bottom:14px;
+}
+.badge-step span{
+  color:var(--c4);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.06em;
+}
+
+.instr{
+  color:#2a3a35;
+  font-size:13.5px;
+  line-height:1.6;
+  margin-bottom:14px;
+}
+.instr em{
+  color:var(--c5);
+  font-style:normal;
+  font-weight:600;
+}
+
+.tries-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:16px;
+}
+.tries-label{
+  color:#888;
+  font-size:11px;
+}
+.try-dot{
+  width:10px;height:10px;
+  border-radius:50%;
+  background:#eee;
+  border:1px solid #ddd;
+  transition:background .2s;
+}
+.try-dot.used{background:rgba(93,172,152,.5);border-color:var(--c3);}
+.try-dot.fail{background:rgba(220,100,100,.4);border-color:#dc6464;}
+
+.legend{
+  display:flex;gap:18px;margin-bottom:16px;flex-wrap:wrap;
+}
+.leg{display:flex;align-items:center;gap:5px;}
+.leg-sq{width:11px;height:11px;border-radius:3px;}
+.leg-lbl{color:#999;font-size:11px;}
+
+.letter-card{
+  background:#f8fbfe;
+  border:1px solid #dce8f0;
+  border-radius:10px;
+  padding:18px 20px;
+  margin-bottom:16px;
+}
+.letter-meta{
+  color:#aaa;
+  font-size:11px;
+  font-style:italic;
+  margin-bottom:10px;
+}
+.letter-body{
+  color:#1a2a25;
+  font-size:13.5px;
+  line-height:1.9;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+/* ══ MOTS CLIQUABLES ══ */
+.w{
+  cursor:pointer;
+  border-radius:3px;
+  padding:2px 3px;
+  display:inline;
+  border-bottom:2px solid transparent;
+  transition:background .12s,color .12s;
+}
+.w:hover{background:rgba(93,172,152,.15);color:var(--c5);}
+.w.sel{background:rgba(93,172,152,.18);color:var(--c5);border-bottom-color:var(--c3);}
+.w.ok{background:rgba(93,172,152,.22);color:var(--c5);border-bottom-color:var(--c3);font-weight:600;}
+.w.ok-reveal{background:rgba(93,172,152,.1);color:var(--c4);border-bottom:2px dashed var(--c4);font-weight:500;}
+.w.ko{background:rgba(0,0,0,.04);color:#bbb;border-bottom-color:#ddd;text-decoration:line-through;}
+
+.chips-label{color:#999;font-size:11px;margin-bottom:8px;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:28px;margin-bottom:18px;}
+.chip{
+  background:rgba(93,172,152,.12);
+  border:1px solid rgba(93,172,152,.28);
+  border-radius:20px;
+  padding:3px 10px;
+  color:var(--c5);
+  font-size:11px;font-weight:500;
+}
+.chip.ko{
+  background:#f5f5f5;
+  border-color:#ddd;
+  color:#bbb;
+  text-decoration:line-through;
+}
+.chip.reveal{
+  background:rgba(93,172,152,.08);
+  border:1px dashed rgba(93,172,152,.35);
+  color:var(--c4);
+  font-style:italic;
+}
+
+.feedback{
+  margin-bottom:14px;
+  border-radius:8px;
+  padding:12px 14px;
+  font-size:13px;
+  line-height:1.55;
+  display:none;
+  color:#1a2a25;
+}
+.feedback.show{display:block;}
+.feedback.ok-fb{background:#edf7f4;border:1px solid rgba(93,172,152,.35);}
+.feedback.warn{background:#fdf6e8;border:1px solid rgba(220,160,60,.35);}
+.feedback.error{background:#fdf0f0;border:1px solid rgba(220,80,80,.2);}
+.feedback strong{color:var(--c5);}
+.feedback.warn strong{color:#b8860b;}
+.feedback.error strong{color:#c0504d;}
+
+.bottom{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  gap:10px;flex-wrap:wrap;
+}
+.helper{color:#aaa;font-size:12px;}
+.btn-row{display:flex;gap:8px;}
+
+.btn{
+  background:var(--c4);
+  color:#fff;
+  border:none;border-radius:8px;
+  padding:9px 20px;
+  font-size:13px;font-weight:600;
+  cursor:pointer;
+  transition:background .15s;
+}
+.btn:disabled{background:#c8ddd9;color:#fff;cursor:default;}
+.btn:not(:disabled):hover{background:var(--c5);}
+
+.btn-retry{
+  background:#f0f4f8;
+  color:#555;
+  border:1px solid #dde;
+  border-radius:8px;
+  padding:9px 16px;
+  font-size:13px;font-weight:500;
+  cursor:pointer;
+  transition:background .15s;
+  display:none;
+}
+.btn-retry:hover{background:#e4eaf2;}
+</style>
+</head>
+<body>
+
+<!-- ══ BARRE SOFIA ══ -->
+<div class="sofia-bar">
+  <span class="sofia-bar-name">Sofia</span>
+  <div class="sofia-bar-conf">
+    <span class="sofia-bar-conf-label">Confiance</span>
+    <span style="font-size:0.9em;">😰</span>
+    <div class="sofia-bar-track">
+      <div class="sofia-bar-fill" id="sofiaBarFill"></div>
+    </div>
+    <span class="sofia-bar-emoji-end" id="sofiaEmojiEnd">😊</span>
+    <span class="sofia-bar-pct" id="sofiaBarPct">0%</span>
+  </div>
+  <span class="sofia-step-label" id="sofiaStepLabel">Étape 1/5</span>
+</div>
+
+<!-- Feedback strip Sofia -->
+<div class="sofia-feedback-strip" id="sofiaFeedbackStrip" style="max-width:640px;margin:6px auto 0;border-radius:8px;">
+  <span style="font-size:1.2em;" id="sofiaFeedbackEmoji">💬</span>
+  <p id="sofiaFeedbackText"></p>
+</div>
+
+<!-- ══ CONTENU ══ -->
+<div class="wrap">
+  <div class="badge-step"><span>SÉLECTIONNE LES MOTS-CLÉS</span></div>
+  <div class="instr">Aide Sofia à analyser la consigne. Clique sur <em>tous les groupes de mots importants</em> — son rôle, son destinataire, la tâche à faire et la forme attendue.</div>
+
+  <div class="tries-row">
+    <span class="tries-label">Essais</span>
+    <span class="try-dot" id="dot0"></span>
+    <span class="try-dot" id="dot1"></span>
+    <span class="try-dot" id="dot2"></span>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-sq" style="background:rgba(93,172,152,.25);border:1px solid #5dac98"></div><span class="leg-lbl">Mot-clé validé</span></div>
+    <div class="leg"><div class="leg-sq" style="background:rgba(93,172,152,.1);border:1px dashed #478978"></div><span class="leg-lbl">Groupe révélé</span></div>
+    <div class="leg"><div class="leg-sq" style="background:#f0f0f0;border:1px solid #ddd"></div><span class="leg-lbl">Pas un mot-clé</span></div>
+  </div>
+
+  <div class="letter-card">
+    <div class="letter-meta">Consigne d'examen</div>
+    <div class="letter-body" id="zone"></div>
+  </div>
+
+  <div class="chips-label">Mots sélectionnés (<span id="cnt">0</span>)<span id="score-line" style="color:var(--c5);display:none"></span></div>
+  <div class="chips" id="chips"></div>
+  <div class="feedback" id="fb"></div>
+
+  <div class="bottom">
+    <span class="helper" id="helper">Clique sur les mots importants</span>
+    <div class="btn-row">
+      <button class="btn-retry" id="btn-retry">Recommencer</button>
+      <button class="btn" id="btn" disabled>Vérifier</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ SOFIA TRACKER (embarqué) ══ */
+var SofiaTracker = (function(){
+  var KEY = 'sofia_342_progress';
+  var TOTAL = 5;
+  var SOFIA_FEEDBACKS = {
+    success: [
+      "Ouf ! Avec ça je sais exactement quoi écrire 😮‍💨",
+      "Super, j'ai plein d'idées maintenant !",
+      "Mon plan est solide, je me sens mieux !",
+      "Mon texte est bien lié, ça se lit bien ! ✨",
+      "Je suis prête à rendre ma copie. Merci ! 🎉"
+    ],
+    fail: [
+      "Hmm, je ne suis pas sûre… tu peux m'aider à chercher les mots importants ?",
+      "Attention, Victor est mon ami au comité !",
+      "L'ordre de mes idées ne sera pas logique…",
+      "Ce connecteur ne va pas bien là…",
+      "Oops, j'ai failli oublier de vérifier ça !"
+    ]
+  };
+
+  function load(){
+    try{ var r=localStorage.getItem(KEY); return r?JSON.parse(r):{steps:{}}; }
+    catch(e){ return {steps:{}}; }
+  }
+  function save(s){
+    try{ s.lastUpdate=Date.now(); localStorage.setItem(KEY,JSON.stringify(s)); }
+    catch(e){}
+  }
+  function calcPct(s){
+    var t=0;
+    for(var i=1;i<=TOTAL;i++){
+      if(s.steps[i]==='success') t+=100;
+      else if(s.steps[i]==='fail') t+=40;
+    }
+    return Math.min(100,Math.round(t/TOTAL));
+  }
+  function render(pct,step){
+    var f=document.getElementById('sofiaBarFill');
+    var l=document.getElementById('sofiaBarPct');
+    var e=document.getElementById('sofiaEmojiEnd');
+    var s=document.getElementById('sofiaStepLabel');
+    if(f) f.style.width=pct+'%';
+    if(l) l.textContent=pct+'%';
+    if(e) e.style.opacity=pct>=80?'1':'0.3';
+    if(s&&step) s.textContent='Étape '+step+'/'+TOTAL;
+  }
+  function feedback(step,type,msg){
+    var strip=document.getElementById('sofiaFeedbackStrip');
+    var txt=document.getElementById('sofiaFeedbackText');
+    var em=document.getElementById('sofiaFeedbackEmoji');
+    if(!strip||!txt) return;
+    txt.textContent=msg||(SOFIA_FEEDBACKS[type][step-1]||SOFIA_FEEDBACKS[type][0]);
+    em.textContent=type==='success'?'😊':'😕';
+    strip.className='sofia-feedback-strip sofia-feedback-'+type+' sofia-visible';
+    clearTimeout(strip._t);
+    strip._t=setTimeout(function(){ strip.classList.remove('sofia-visible'); },4500);
+  }
+  function init(step){
+    var state=load();
+    render(calcPct(state),step);
+  }
+  function success(step,msg){
+    var state=load();
+    if(state.steps[step]!=='success'){ state.steps[step]='success'; save(state); }
+    render(calcPct(state),step);
+    feedback(step,'success',msg);
+  }
+  function fail(step,msg){
+    var state=load();
+    if(state.steps[step]!=='success'){ state.steps[step]='fail'; save(state); }
+    render(calcPct(state),step);
+    feedback(step,'fail',msg);
+  }
+  return {init:init,success:success,fail:fail};
+})();
+
+/* ══ ACTIVITÉ ══ */
+var SOFIA_STEP = 1;
+
+var TEXT = "Vous êtes le président du comité des élèves de votre école et vous travaillez avec votre ami Victor pour proposer de nouveaux projets. Victor vous envoie ce message.\n\nSalut,\nJe viens de penser à notre nouveau projet. Je propose de modifier la cantine. D'abord il faut la nettoyer. Puis nous pourrions ajouter des cadres avec beaucoup de couleurs. Il faudrait également mettre de la musique pendant les repas et installer des machines avec des jeux. Qu'est-ce que tu en penses ?\nVictor\n\nVous répondez à ce message (160 mots)";
+
+var VALIDS = [
+  "président du comité des élèves de votre école",
+  "ami victor",
+  "modifier la cantine",
+  "ajouter des cadres",
+  "mettre de la musique",
+  "installer des machines avec des jeux",
+  "répondez à ce message"
+];
+
+var MAX_TRIES = 3;
+var tries = 0;
+var words = [];
+var sel = {};
+var validated = false;
+var scorm = null;
+
+function norm(s){
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();
+}
+
+function initSCORM(){
+  try{
+    var api=window.parent.API_1484_11||window.parent.API;
+    if(api){ scorm=api; scorm.Initialize(""); scorm.SetValue("cmi.completion_status","incomplete"); scorm.SetValue("cmi.success_status","unknown"); }
+  }catch(e){}
+}
+
+function sendSCORM(found,total,attempt){
+  try{
+    var score=Math.round((found/total)*100);
+    var passed=found===total;
+    var exhausted=attempt>=MAX_TRIES;
+    if(scorm){
+      scorm.SetValue("cmi.score.raw",String(score));
+      scorm.SetValue("cmi.score.min","0");
+      scorm.SetValue("cmi.score.max","100");
+      scorm.SetValue("cmi.score.scaled",String((found/total).toFixed(2)));
+      if(passed||exhausted){
+        scorm.SetValue("cmi.completion_status","completed");
+        scorm.SetValue("cmi.success_status",passed?"passed":"failed");
+        scorm.Commit("");
+      }
+    }
+    if(passed||exhausted) window.parent.postMessage({type:'complete'},'*');
+  }catch(e){
+    window.parent.postMessage({type:'complete'},'*');
+  }
+}
+
+function build(){
+  var zone=document.getElementById('zone');
+  zone.innerHTML='';
+  words=[];
+  var wi=0;
+  var lines=TEXT.split('\n');
+  for(var li=0;li<lines.length;li++){
+    var toks=lines[li].split(/(\s+)/);
+    for(var ti=0;ti<toks.length;ti++){
+      var tok=toks[ti];
+      if(/^\s+$/.test(tok)||tok===''){
+        zone.appendChild(document.createTextNode(tok));
+      } else {
+        var sp=document.createElement('span');
+        sp.className='w';
+        sp.textContent=tok;
+        sp.setAttribute('data-i',wi);
+        (function(index){
+          sp.addEventListener('click',function(){ toggle(index); });
+          sp.addEventListener('touchend',function(e){ e.preventDefault(); toggle(index); });
+        })(wi);
+        words[wi]={el:sp,text:tok};
+        wi++;
+        zone.appendChild(sp);
+      }
+    }
+    if(li<lines.length-1) zone.appendChild(document.createElement('br'));
+  }
+}
+
+function toggle(i){
+  if(validated) return;
+  if(sel[i]){ delete sel[i]; words[i].el.className='w'; }
+  else { sel[i]=true; words[i].el.className='w sel'; }
+  refresh();
+}
+
+function refresh(){
+  var keys=Object.keys(sel);
+  var n=keys.length;
+  document.getElementById('cnt').textContent=n;
+  document.getElementById('btn').disabled=n===0;
+  document.getElementById('helper').textContent=n===0?'Clique sur les mots importants':n+' mot'+(n>1?'s':'')+(n>1?' sélectionnés':' sélectionné');
+  var chips=document.getElementById('chips');
+  chips.innerHTML='';
+  keys.sort(function(a,b){return a-b;}).forEach(function(i){
+    var c=document.createElement('span');
+    c.className='chip';
+    c.textContent=words[i].text;
+    c.setAttribute('data-i',i);
+    chips.appendChild(c);
+  });
+}
+
+function getValidIdx(){
+  var allN=words.map(function(w){return norm(w.text);});
+  var valid={};
+  VALIDS.forEach(function(phrase){
+    var ph=norm(phrase).split(' ');
+    for(var i=0;i<=allN.length-ph.length;i++){
+      var match=true;
+      for(var j=0;j<ph.length;j++){ if(allN[i+j]!==ph[j]){match=false;break;} }
+      if(match){ for(var j=0;j<ph.length;j++) valid[i+j]=true; }
+    }
+  });
+  return valid;
+}
+
+function getPhraseIndices(){
+  var allN=words.map(function(w){return norm(w.text);});
+  var phraseMap={};
+  VALIDS.forEach(function(phrase){
+    var ph=norm(phrase).split(' ');
+    for(var i=0;i<=allN.length-ph.length;i++){
+      var match=true;
+      for(var j=0;j<ph.length;j++){ if(allN[i+j]!==ph[j]){match=false;break;} }
+      if(match){
+        var indices=[];
+        for(var j=0;j<ph.length;j++) indices.push(i+j);
+        phraseMap[phrase]=indices;
+      }
+    }
+  });
+  return phraseMap;
+}
+
+function updateDots(){
+  for(var d=0;d<MAX_TRIES;d++){
+    var dot=document.getElementById('dot'+d);
+    if(d<tries-1){ dot.className='try-dot fail'; }
+    else if(d===tries-1){ dot.className='try-dot used'; }
+    else{ dot.className='try-dot'; }
+  }
+}
+
+function validate(){
+  if(validated) return;
+  validated=true;
+  tries++;
+  updateDots();
+
+  var validSet=getValidIdx();
+  var phraseMap=getPhraseIndices();
+  var hitPhrases={};
+
+  VALIDS.forEach(function(phrase){
+    var indices=phraseMap[phrase];
+    if(!indices) return;
+    var userHitAny=indices.some(function(idx){return sel[idx];});
+    if(userHitAny){
+      hitPhrases[phrase]=true;
+      indices.forEach(function(idx){
+        words[idx].el.className=sel[idx]?'w ok':'w ok-reveal';
+      });
+    }
+  });
+
+  Object.keys(sel).forEach(function(i){
+    if(!validSet[i]) words[i].el.className='w ko';
+  });
+
+  document.getElementById('chips').querySelectorAll('.chip').forEach(function(c){
+    if(!validSet[parseInt(c.getAttribute('data-i'))]) c.className='chip ko';
+  });
+
+  var found=Object.keys(hitPhrases).filter(function(k){return k!=='undefined';}).length;
+  var total=VALIDS.length;
+
+  var sl=document.getElementById('score-line');
+  sl.style.display='inline';
+  sl.textContent=' — '+found+'/'+total+' groupes corrects';
+
+  var fb=document.getElementById('fb');
+  var btnRetry=document.getElementById('btn-retry');
+  var btnVal=document.getElementById('btn');
+
+  if(found===total){
+    fb.className='feedback show ok-fb';
+    fb.innerHTML='<strong>Excellent !</strong> Tu as identifié les '+total+' groupes de mots-clés. Sofia sait qui elle est, à qui elle écrit, quoi proposer et quelle forme utiliser.';
+    btnVal.disabled=true;
+    btnVal.textContent='Terminé ✓';
+    SofiaTracker.success(SOFIA_STEP);
+    sendSCORM(found,total,tries);
+  } else if(tries<MAX_TRIES){
+    fb.className='feedback show warn';
+    fb.innerHTML='<strong>'+found+'/'+total+' groupes trouvés.</strong> Les mots en pointillés font partie des groupes partiellement identifiés. Réessaie !';
+    btnVal.disabled=true;
+    btnVal.textContent='Vérifier';
+    btnRetry.style.display='inline-block';
+  } else {
+    fb.className='feedback show error';
+    fb.innerHTML='<strong>3 essais utilisés.</strong> Voici les groupes à retenir : <em>'+VALIDS.join(', ')+'</em>.';
+    btnVal.disabled=true;
+    btnVal.textContent='Terminé';
+    btnRetry.style.display='none';
+    revealAll(phraseMap);
+    SofiaTracker.fail(SOFIA_STEP);
+    sendSCORM(found,total,tries);
+  }
+}
+
+function revealAll(phraseMap){
+  VALIDS.forEach(function(phrase){
+    var indices=phraseMap[phrase];
+    if(!indices) return;
+    indices.forEach(function(idx){
+      if(!sel[idx]) words[idx].el.className='w ok-reveal';
+    });
+  });
+}
+
+function reset(){
+  sel={};
+  validated=false;
+  document.getElementById('score-line').style.display='none';
+  document.getElementById('score-line').textContent='';
+  document.getElementById('fb').className='feedback';
+  document.getElementById('fb').innerHTML='';
+  document.getElementById('chips').innerHTML='';
+  document.getElementById('btn').textContent='Vérifier';
+  document.getElementById('btn-retry').style.display='none';
+  document.getElementById('helper').textContent='Clique sur les mots importants';
+  document.getElementById('cnt').textContent='0';
+  build();
+  updateDots();
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  SofiaTracker.init(SOFIA_STEP);
+  initSCORM();
+  build();
+  refresh();
+  document.getElementById('btn').addEventListener('click',validate);
+  document.getElementById('btn-retry').addEventListener('click',reset);
+});
+</script>
+</body>
+</html>
